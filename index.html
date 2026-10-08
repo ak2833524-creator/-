@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>노인맞춤돌봄서비스 생활지원사 12인 한눈에 보는 통합 관리대장</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white !important; color: black !important; }
+    }
+    .print-only { display: none; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f8fafc; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen p-4 md:p-6 font-sans">
+
+  <!-- Header -->
+  <header class="mb-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 pb-4">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-blue-100 text-blue-800">
+          노인맞춤돌봄서비스 실무 표준
+        </span>
+        <span class="text-xs text-slate-500">생활지원사 12인 통합 총괄판</span>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+        <span>📋</span> 생활지원사 12인 한눈에 보는 통합 관리대장
+      </h1>
+      <p class="text-sm text-slate-500 mt-0.5">
+        담당 어르신 명단 · 어르신 특이사항 보고 · 휴가 및 대체인력 현황을 <strong>한 화면에서 동시에 확인</strong>합니다.
+      </p>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2 no-print flex-wrap">
+      <a href="./노인맞춤돌봄_생활지원사12명_통합관리대장.xls" download class="px-3.5 py-2 text-sm font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm flex items-center gap-1.5 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5L19 7.5V19a2 2 0 01-2 2z"></path></svg>
+        엑셀(.XLS) 다운로드
+      </a>
+      <button onclick="window.print()" class="px-3.5 py-2 text-sm font-medium rounded-lg bg-white hover:bg-slate-100 border border-slate-300 shadow-sm flex items-center gap-1.5 transition">
+        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        출력 / 결재용 인쇄
+      </button>
+      <button onclick="resetDefaultData()" class="px-3 py-2 text-xs text-slate-500 hover:text-red-500 border border-slate-300 rounded-lg transition" title="샘플 데이터 초기화">
+        초기화
+      </button>
+    </div>
+  </header>
+
+  <!-- Print-Only Approval Box -->
+  <div class="print-only mb-6 border border-gray-400 p-2 text-right">
+    <table class="inline-table border-collapse border border-gray-400 text-xs">
+      <tr>
+        <th rowspan="2" class="border border-gray-400 p-2 bg-gray-100">결<br>재</th>
+        <th class="border border-gray-400 px-3 py-1">담 당</th>
+        <th class="border border-gray-400 px-3 py-1">전담사회복지사</th>
+        <th class="border border-gray-400 px-3 py-1">센터장</th>
+      </tr>
+      <tr class="h-12">
+        <td class="border border-gray-400"></td>
+        <td class="border border-gray-400"></td>
+        <td class="border border-gray-400"></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- KPI Top Overview -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-5 no-print">
+    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium text-slate-500">생활지원사 현황</span>
+        <span class="p-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold">12명</span>
+      </div>
+      <div class="mt-1.5 flex items-baseline gap-2">
+        <span class="text-2xl font-bold text-slate-900">12명 전원</span>
+        <span class="text-xs text-emerald-600 font-semibold" id="kpi-worker-working">11명 활동 · 1명 휴가</span>
+      </div>
+      <p class="text-[11px] text-slate-500 mt-0.5">상호 대체인력 100% 매칭 완료</p>
+    </div>
+
+    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium text-slate-500">관리 대상 어르신</span>
+        <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold">192명</span>
+      </div>
+      <div class="mt-1.5 flex items-baseline gap-2">
+        <span class="text-2xl font-bold text-slate-900">192명</span>
+        <span class="text-xs text-blue-600 font-semibold">1인당 16명 배정</span>
+      </div>
+      <p class="text-[11px] text-slate-500 mt-0.5">중점돌봄 24명 (주2~3회) · 일반 168명</p>
+    </div>
+
+    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium text-slate-500">당월 특이사항 보고</span>
+        <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg text-xs font-bold">8건</span>
+      </div>
+      <div class="mt-1.5 flex items-baseline gap-2">
+        <span class="text-2xl font-bold text-amber-600" id="kpi-report-urgent">2건 조치중</span>
+        <span class="text-xs text-emerald-600 font-semibold">6건 조치완료</span>
+      </div>
+      <p class="text-[11px] text-slate-500 mt-0.5">응급이송 1 · 병원동행 4 · 영양/기타 3</p>
+    </div>
+
+    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium text-slate-500">휴가 신청 및 근태</span>
+        <span class="p-1.5 bg-purple-50 text-purple-600 rounded-lg text-xs font-bold">4건</span>
+      </div>
+      <div class="mt-1.5 flex items-baseline gap-2">
+        <span class="text-2xl font-bold text-purple-600" id="kpi-leave-summary">승인대기 1건</span>
+        <span class="text-xs text-emerald-600 font-semibold">3건 승인완료</span>
+      </div>
+      <p class="text-[11px] text-slate-500 mt-0.5">어르신 안전확인 공백 0건 (대체수행)</p>
+    </div>
+  </div>
+
+  <!-- Filter & Fast Action Bar -->
+  <div class="bg-white p-3.5 rounded-xl border border-slate-200 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
+    <div class="flex items-center gap-2 flex-1 max-w-md">
+      <div class="relative w-full">
+        <input type="text" id="master-search" oninput="renderMasterTable()" placeholder="생활지원사 성명, 담당권역, 어르신 성명 검색..." class="w-full pl-9 pr-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500">
+        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 flex-wrap">
+      <button onclick="openAddReportModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition flex items-center gap-1 shadow-sm">
+        <span>🚨</span> 특이사항 보고 작성
+      </button>
+      <button onclick="openAddLeaveModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition flex items-center gap-1 shadow-sm">
+        <span>🏖️</span> 휴가 신청서 작성
+      </button>
+      <button onclick="openAddSeniorModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition flex items-center gap-1 shadow-sm">
+        <span>👵</span> 어르신 신규 배정
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN TABLE -->
+  <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse" id="master-table">
+        <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 text-xs font-bold text-slate-600">
+          <tr>
+            <th class="p-3 w-12 text-center">연번</th>
+            <th class="p-3 w-44">생활지원사 정보</th>
+            <th class="p-3 w-28 text-center">근무 상태</th>
+            <th class="p-3 w-64">담당 어르신 현황 (중점/일반)</th>
+            <th class="p-3 min-w-[280px]">최근 어르신 특이사항 보고</th>
+            <th class="p-3 w-64">당월 휴가 및 대체인력</th>
+            <th class="p-3 w-28 text-center no-print">상세 / 관리</th>
+          </tr>
+        </thead>
+        <tbody id="master-table-body" class="divide-y divide-slate-200">
+        </tbody>
+      </table>
+    </div>
+    <div class="p-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <span>* 각 생활지원사의 <strong>[▼ 어르신/보고 펼치기]</strong>를 누르면 전체 담당 어르신과 보고 이력이 바로 확장됩니다.</span>
+      <span class="font-semibold text-blue-600">총 12명 생활지원사 정상 연동중</span>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div id="modal-add-report" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 class="font-bold text-base text-slate-800">🚨 어르신 특이사항 보고서 등록</h3>
+        <button onclick="closeModal('modal-add-report')" class="text-xl text-slate-500">&times;</button>
+      </div>
+      <form onsubmit="handleSaveReport(event)" class="p-5 space-y-3.5 text-sm">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">담당 생활지원사 *</label>
+            <select id="form-report-worker" onchange="updateSeniorDropdownForReport()" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">대상 어르신 *</label>
+            <select id="form-report-senior" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm"></select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">유형 구분 *</label>
+            <select id="form-report-category" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+              <option value="건강악화/병원동행">건강악화 / 병원동행</option>
+              <option value="응급이송/낙상">응급이송 / 낙상</option>
+              <option value="영양/식사불량">영양 / 식사불량</option>
+              <option value="연락두절/안전의심">연락두절 / 안전의심</option>
+              <option value="주거위험/환경개선">주거위험 / 환경개선</option>
+              <option value="심리불안/우울">심리불안 / 우울</option>
+              <option value="기타특이사항">기타 특이사항</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">긴급도 *</label>
+            <select id="form-report-urgency" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+              <option value="주의/요관찰">주의 / 요관찰</option>
+              <option value="긴급/응급">긴급 / 응급 (즉시조치)</option>
+              <option value="일반">일반 (경과기록)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">특이사항 내용 *</label>
+          <textarea id="form-report-content" required rows="3" placeholder="어르신 방문 시 확인된 구체적인 신체, 주거, 건강 상태를 입력하세요." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">조치 및 연계 내용</label>
+          <input type="text" id="form-report-action" placeholder="예: 전담사회복지사 보고 후 정형외과 동행 진료 완료" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">진행 상태 *</label>
+          <select id="form-report-status" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+            <option value="조치중">조치중 (지속 모니터링)</option>
+            <option value="조치완료">조치완료</option>
+            <option value="접수">접수</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-add-report')" class="px-3.5 py-1.5 bg-slate-100 border border-slate-300 rounded-lg">취소</button>
+          <button type="submit" class="px-4 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700">보고서 저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-add-leave" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 class="font-bold text-base text-slate-800">🏖️ 생활지원사 휴가 신청서 작성</h3>
+        <button onclick="closeModal('modal-add-leave')" class="text-xl text-slate-500">&times;</button>
+      </div>
+      <form onsubmit="handleSaveLeave(event)" class="p-5 space-y-3.5 text-sm">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">신청 생활지원사 *</label>
+            <select id="form-leave-worker" onchange="autoSelectSubstitute()" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">휴가 종류 *</label>
+            <select id="form-leave-type" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+              <option value="연차">연차 (종일)</option>
+              <option value="오전반차">오전반차</option>
+              <option value="오후반차">오후반차</option>
+              <option value="병가">병가</option>
+              <option value="경조사">경조사</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">시작일 *</label>
+            <input type="date" id="form-leave-start" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">종료일 *</label>
+            <input type="date" id="form-leave-end" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">휴가 사유 *</label>
+          <input type="text" id="form-leave-reason" required placeholder="예: 가족 건강검진, 개인 사정 등" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+        </div>
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl space-y-2.5">
+          <div class="text-xs font-bold text-blue-800">🛡️ 업무 공백 방지 대체인력 지정 (필수)</div>
+          <div>
+            <label class="block text-xs text-slate-600 mb-1">업무 대행자 (동료 생활지원사) *</label>
+            <select id="form-leave-substitute" required class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-600 mb-1">휴가 중 어르신 안전확인 계획 *</label>
+            <input type="text" id="form-leave-plan" required value="대체지원사가 당일 중점대상 유선/방문 확인 진행" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-sm">
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-add-leave')" class="px-3.5 py-1.5 bg-slate-100 border border-slate-300 rounded-lg">취소</button>
+          <button type="submit" class="px-4 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700">신청서 제출</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-add-senior" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h3 class="font-bold text-base text-slate-800">👵 어르신 신규 배정 등록</h3>
+        <button onclick="closeModal('modal-add-senior')" class="text-xl text-slate-500">&times;</button>
+      </div>
+      <form onsubmit="handleSaveSenior(event)" class="p-5 space-y-3.5 text-sm">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">어르신 성명 *</label>
+          <input type="text" id="form-senior-name" required placeholder="예: 박순옥 어르신" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">돌봄 구분 *</label>
+            <select id="form-senior-type" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+              <option value="중점돌봄">중점돌봄 (주 2~3회 방문)</option>
+              <option value="일반돌봄">일반돌봄 (주 1회 방문+유선)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">담당 생활지원사 *</label>
+            <select id="form-senior-worker" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm"></select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">연락처</label>
+            <input type="text" id="form-senior-phone" placeholder="010-0000-0000" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">비상연락처 (관계)</label>
+            <input type="text" id="form-senior-emergency" placeholder="010-1111-2222 (자녀)" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">거주지 주소</label>
+          <input type="text" id="form-senior-address" placeholder="예: 행복1동 102호" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">주요 질환 및 건강 유의사항</label>
+          <textarea id="form-senior-notes" rows="2" placeholder="예: 관절염 중증, 보행보조기 필수, 당뇨 식단관리" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-add-senior')" class="px-3.5 py-1.5 bg-slate-100 border border-slate-300 rounded-lg">취소</button>
+          <button type="submit" class="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">저장하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_WORKERS = [
+      { id: 1, name: "김영순", phone: "010-3451-2001", area: "1권역 (행복1동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 2 },
+      { id: 2, name: "이정숙", phone: "010-4822-2002", area: "1권역 (행복2동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 1 },
+      { id: 3, name: "박미경", phone: "010-9182-2003", area: "2권역 (희망1동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 4 },
+      { id: 4, name: "최순자", phone: "010-2931-2004", area: "2권역 (희망2동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 3 },
+      { id: 5, name: "정영희", phone: "010-8472-2005", area: "3권역 (평화1동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 6 },
+      { id: 6, name: "강정순", phone: "010-5321-2006", area: "3권역 (평화2동)", status: "휴가중", focusCount: 2, normalCount: 14, substituteId: 5 },
+      { id: 7, name: "조옥자", phone: "010-7712-2007", area: "4권역 (나눔1동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 8 },
+      { id: 8, name: "윤명숙", phone: "010-6192-2008", area: "4권역 (나눔2동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 7 },
+      { id: 9, name: "한경희", phone: "010-3841-2009", area: "5권역 (사랑1동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 10 },
+      { id: 10, name: "오미자", phone: "010-4211-2010", area: "5권역 (사랑2동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 9 },
+      { id: 11, name: "송혜숙", phone: "010-9012-2011", area: "6권역 (온유1동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 12 },
+      { id: 12, name: "임복순", phone: "010-8231-2012", area: "6권역 (온유2동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 11 }
+    ];
+
+    const SAMPLE_SENIORS = [
+      { id: 101, workerId: 1, name: "박순옥", type: "중점돌봄", phone: "010-2345-0001", address: "행복1동 102호", emergency: "010-9988-1122 (장남)", notes: "관절염 중증, 보행보조기 필수, 당뇨 식단관리 필요" },
+      { id: 102, workerId: 1, name: "이종태", type: "중점돌봄", phone: "010-2345-0002", address: "행복1동 305호", emergency: "010-8877-2233 (딸)", notes: "독거, 경증 인지저하, 가스밸브 자동잠금기 점검 필요" },
+      { id: 103, workerId: 1, name: "정말순", type: "일반돌봄", phone: "010-2345-0003", address: "행복1동 201호", emergency: "010-7766-3344 (이웃)", notes: "고혈압 약 복용, 말벗 선호" },
+      { id: 104, workerId: 1, name: "김봉출", type: "일반돌봄", phone: "010-2345-0004", address: "행복1동 402호", emergency: "010-6655-4455 (조카)", notes: "청력 저하, 큰 목소리로 소통 필요" },
+      { id: 105, workerId: 2, name: "최길자", type: "중점돌봄", phone: "010-3456-0005", address: "행복2동 101호", emergency: "010-5544-5566 (딸)", notes: "뇌졸중 후유증 편마비, 욕창 예방 자세 안내" },
+      { id: 106, workerId: 2, name: "조동일", type: "중점돌봄", phone: "010-3456-0006", address: "행복2동 204호", emergency: "010-4433-6677 (아들)", notes: "심혈관 질환, 주 2회 병원투약 확인 필수" },
+      { id: 107, workerId: 3, name: "황복남", type: "중점돌봄", phone: "010-4567-0008", address: "희망1동 104호", emergency: "010-2211-8899 (사위)", notes: "우울증 약물 복용, 식사 거름 잦음, 정서지지 필요" },
+      { id: 108, workerId: 3, name: "손정식", type: "중점돌봄", phone: "010-4567-0009", address: "희망1동 502호", emergency: "010-1100-9900 (요양보호사)", notes: "거동불가 와상, 기저귀 및 식사 확인" },
+      { id: 109, workerId: 4, name: "배춘자", type: "중점돌봄", phone: "010-5678-0010", address: "희망2동 203호", emergency: "010-9087-0011 (딸)", notes: "척추협착증, 낙상위험군 주의" },
+      { id: 110, workerId: 5, name: "문수길", type: "중점돌봄", phone: "010-6789-0011", address: "평화1동 103호", emergency: "010-8976-0022 (아들)", notes: "당뇨 합병증, 발 상처 확인 필요" },
+      { id: 111, workerId: 6, name: "양금순", type: "중점돌봄", phone: "010-7890-0012", address: "평화2동 401호", emergency: "010-7865-0033 (장녀)", notes: "강정순 지원사 휴가중 -> 정영희 지원사가 대체방문 중" },
+      { id: 112, workerId: 7, name: "서만석", type: "중점돌봄", phone: "010-8901-0013", address: "나눔1동 302호", emergency: "010-6754-0044 (조카)", notes: "만성폐쇄성폐질환(COPD), 호흡곤란 관찰" },
+      { id: 113, workerId: 8, name: "전옥분", type: "중점돌봄", phone: "010-9012-0014", address: "나눔2동 202호", emergency: "010-5643-0055 (딸)", notes: "고독사 위험군, 일일 안부확인 철저" },
+      { id: 114, workerId: 9, name: "노진구", type: "중점돌봄", phone: "010-0123-0015", address: "사랑1동 101호", emergency: "010-4532-0066 (이웃)", notes: "알코올 의존 경향, 방문 시 영양음료 전달" },
+      { id: 115, workerId: 10, name: "구영모", type: "중점돌봄", phone: "010-1234-0016", address: "사랑2동 503호", emergency: "010-3421-0077 (아들)", notes: "파킨슨병, 떨림 증상 심함" },
+      { id: 116, workerId: 11, name: "안순자", type: "중점돌봄", phone: "010-2345-0017", address: "온유1동 204호", emergency: "010-2310-0088 (딸)", notes: "골다공증 심함, 욕실 미끄럼방지매트 설치 완료" },
+      { id: 117, workerId: 12, name: "오갑순", type: "중점돌봄", phone: "010-3456-0018", address: "온유2동 301호", emergency: "010-1209-0099 (아들)", notes: "치매 전단계, 약 달력 복용 확인 요망" }
+    ];
+
+    const SAMPLE_REPORTS = [
+      { id: 1, date: "2026-10-08 09:30", workerId: 1, seniorId: 101, category: "건강악화/병원동행", urgency: "주의/요관찰", content: "무릎 관절 부종 심화로 보행 시 통증 호소. 식사 준비 어려움.", action: "전담사회복지사 보고 후 인근 정형외과 동행 연계. 밑반찬 지원 요청.", status: "조치중" },
+      { id: 2, date: "2026-10-07 14:15", workerId: 3, seniorId: 107, category: "영양/식사불량", urgency: "주의/요관찰", content: "최근 3일간 식사 거름 및 냉장고 상한 음식 방치됨.", action: "상한 음식 폐기, 죽 배달 연계 및 영양제 전달.", status: "조치중" },
+      { id: 3, date: "2026-10-06 11:20", workerId: 2, seniorId: 105, category: "응급이송/낙상", urgency: "긴급/응급", content: "화장실 앞 바닥 낙상 발견, 엉덩이 타박상.", action: "119 응급실 이송, 엑스레이 골절 없음 확인, 가족 인계 완료.", status: "조치완료" },
+      { id: 4, date: "2026-10-05 16:00", workerId: 5, seniorId: 110, category: "건강악화/병원동행", urgency: "주의/요관찰", content: "우측 발가락 궤양 증상 악화 조짐.", action: "보호자 유선 연락 후 토요일 전문병원 동행 확정.", status: "조치완료" },
+      { id: 5, date: "2026-10-04 10:40", workerId: 7, seniorId: 112, category: "주거위험/환경개선", urgency: "일반", content: "보일러 온수 고장 냉방 생활.", action: "주민센터 긴급 에너지바우처 및 무상점검 신청 연계.", status: "조치완료" },
+      { id: 6, date: "2026-10-02 13:50", workerId: 4, seniorId: 109, category: "연락두절/안전의심", urgency: "긴급/응급", content: "안부전화 3회 미수신. 긴급 현장방문.", action: "경로당 마실 확인됨. 휴대폰 충전방법 재안내.", status: "조치완료" },
+      { id: 7, date: "2026-09-29 15:10", workerId: 9, seniorId: 114, category: "심리불안/우울", urgency: "일반", content: "명절 이후 고독감 및 우울감 호소.", action: "정서적 지지 및 복지관 원예 프로그램 참여 연계.", status: "조치완료" },
+      { id: 8, date: "2026-09-25 11:00", workerId: 12, seniorId: 117, category: "기타특이사항", urgency: "일반", content: "처방약 중복 복용 위험 발견.", action: "요일별 약 달력 교체 부착 및 복약 지도 완료.", status: "조치완료" }
+    ];
+
+    const SAMPLE_LEAVES = [
+      { id: 1, requestDate: "2026-10-06", workerId: 6, type: "연차", startDate: "2026-10-08", endDate: "2026-10-08", days: 1, reason: "가족 건강검진 동행", substituteId: 5, plan: "정영희 지원사가 평화2동 중점 2명 직접 방문 및 일반 14명 유선 확인", status: "승인완료" },
+      { id: 2, requestDate: "2026-10-07", workerId: 2, type: "오후반차", startDate: "2026-10-12", endDate: "2026-10-12", days: 0.5, reason: "개인 관공서 업무", substituteId: 1, plan: "오전 중점가구 방문 후 오후 유선 연락건 김영순 지원사 대행", status: "승인완료" },
+      { id: 3, requestDate: "2026-10-08", workerId: 9, type: "연차", startDate: "2026-10-15", endDate: "2026-10-16", days: 2, reason: "자녀 결혼식 관련 행사", substituteId: 10, plan: "오미자 지원사가 사랑1동 긴급 가구 현장점검 진행", status: "승인대기" },
+      { id: 4, requestDate: "2026-09-20", workerId: 4, type: "병가", startDate: "2026-09-22", endDate: "2026-09-23", days: 2, reason: "독감으로 인한 병원 치료", substituteId: 3, plan: "박미경 지원사가 희망2동 중점 2가구 집중 대리 순회", status: "승인완료" }
+    ];
+
+    let state = {
+      workers: [],
+      seniors: [],
+      reports: [],
+      leaves: [],
+      expandedWorkers: new Set()
+    };
+
+    function initData() {
+      const storedWorkers = localStorage.getItem('care_workers');
+      const storedSeniors = localStorage.getItem('care_seniors');
+      const storedReports = localStorage.getItem('care_reports');
+      const storedLeaves = localStorage.getItem('care_leaves');
+
+      state.workers = storedWorkers ? JSON.parse(storedWorkers) : DEFAULT_WORKERS;
+      state.seniors = storedSeniors ? JSON.parse(storedSeniors) : SAMPLE_SENIORS;
+      state.reports = storedReports ? JSON.parse(storedReports) : SAMPLE_REPORTS;
+      state.leaves = storedLeaves ? JSON.parse(storedLeaves) : SAMPLE_LEAVES;
+
+      saveState();
+      populateDropdowns();
+      refreshKPIs();
+      renderMasterTable();
+    }
+
+    function saveState() {
+      localStorage.setItem('care_workers', JSON.stringify(state.workers));
+      localStorage.setItem('care_seniors', JSON.stringify(state.seniors));
+      localStorage.setItem('care_reports', JSON.stringify(state.reports));
+      localStorage.setItem('care_leaves', JSON.stringify(state.leaves));
+    }
+
+    function resetDefaultData() {
+      if (confirm('샘플 데이터로 초기화하시겠습니까?')) {
+        state.workers = JSON.parse(JSON.stringify(DEFAULT_WORKERS));
+        state.seniors = JSON.parse(JSON.stringify(SAMPLE_SENIORS));
+        state.reports = JSON.parse(JSON.stringify(SAMPLE_REPORTS));
+        state.leaves = JSON.parse(JSON.stringify(SAMPLE_LEAVES));
+        saveState();
+        populateDropdowns();
+        refreshKPIs();
+        renderMasterTable();
+        alert('초기화되었습니다.');
+      }
+    }
+
+    function refreshKPIs() {
+      const urgentOrActive = state.reports.filter(r => r.urgency === '긴급/응급' || r.status === '조치중').length;
+      document.getElementById('kpi-report-urgent').innerText = `${urgentOrActive}건 조치중`;
+
+      const pendingLeaves = state.leaves.filter(l => l.status === '승인대기').length;
+      document.getElementById('kpi-leave-summary').innerText = `승인대기 ${pendingLeaves}건`;
+    }
+
+    function populateDropdowns() {
+      const reportWorker = document.getElementById('form-report-worker');
+      reportWorker.innerHTML = state.workers.map(w => `<option value="${w.id}">${w.name} (${w.area})</option>`).join('');
+
+      const leaveWorker = document.getElementById('form-leave-worker');
+      leaveWorker.innerHTML = state.workers.map(w => `<option value="${w.id}">${w.name} (${w.area})</option>`).join('');
+
+      const seniorWorker = document.getElementById('form-senior-worker');
+      seniorWorker.innerHTML = state.workers.map(w => `<option value="${w.id}">${w.name} (${w.area})</option>`).join('');
+
+      autoSelectSubstitute();
+      updateSeniorDropdownForReport();
+    }
+
+    function autoSelectSubstitute() {
+      const selectedWorkerId = parseInt(document.getElementById('form-leave-worker').value);
+      const worker = state.workers.find(w => w.id === selectedWorkerId);
+      const subSelect = document.getElementById('form-leave-substitute');
+
+      subSelect.innerHTML = state.workers
+        .filter(w => w.id !== selectedWorkerId)
+        .map(w => `<option value="${w.id}" ${worker && worker.substituteId === w.id ? 'selected' : ''}>${w.name} (${w.area})</option>`)
+        .join('');
+    }
+
+    function updateSeniorDropdownForReport() {
+      const selectedWorkerId = parseInt(document.getElementById('form-report-worker').value);
+      const workerSeniors = state.seniors.filter(s => s.workerId === selectedWorkerId);
+      const reportSenior = document.getElementById('form-report-senior');
+
+      if (workerSeniors.length > 0) {
+        reportSenior.innerHTML = workerSeniors.map(s => `<option value="${s.id}">${s.name} (${s.type})</option>`).join('');
+      } else {
+        reportSenior.innerHTML = `<option value="0">등록된 어르신 없음</option>`;
+      }
+    }
+
+    function toggleWorkerExpand(workerId) {
+      if (state.expandedWorkers.has(workerId)) {
+        state.expandedWorkers.delete(workerId);
+      } else {
+        state.expandedWorkers.add(workerId);
+      }
+      renderMasterTable();
+    }
+
+    function renderMasterTable() {
+      const query = (document.getElementById('master-search')?.value || '').trim().toLowerCase();
+      const tbody = document.getElementById('master-table-body');
+      let html = '';
+
+      state.workers.forEach((w, index) => {
+        const sub = state.workers.find(item => item.id === w.substituteId);
+        const subName = sub ? sub.name : '미지정';
+        const workerSeniors = state.seniors.filter(s => s.workerId === w.id);
+        const workerReports = state.reports.filter(r => r.workerId === w.id);
+        const workerLeaves = state.leaves.filter(l => l.workerId === w.id);
+
+        if (query) {
+          const matchWorker = w.name.toLowerCase().includes(query) || w.area.toLowerCase().includes(query);
+          const matchSenior = workerSeniors.some(s => s.name.toLowerCase().includes(query));
+          const matchReport = workerReports.some(r => r.content.toLowerCase().includes(query));
+          if (!matchWorker && !matchSenior && !matchReport) return;
+        }
+
+        const isExpanded = state.expandedWorkers.has(w.id);
+
+        let statusBadge = '';
+        if (w.status === '정상근무') {
+          statusBadge = `<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">정상근무</span>`;
+        } else if (w.status === '휴가중') {
+          statusBadge = `<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">🏖️ 휴가중</span>`;
+        } else {
+          statusBadge = `<span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">${w.status}</span>`;
+        }
+
+        const focusSeniors = workerSeniors.filter(s => s.type === '중점돌봄');
+        let seniorPreview = `
+          <div class="text-xs">
+            <div class="flex items-center gap-1.5 font-semibold text-blue-600">
+              <span>총 ${w.focusCount + w.normalCount}명</span>
+              <span class="text-[11px] px-1.5 py-0.2 bg-red-100 text-red-700 rounded">중점 ${w.focusCount}</span>
+              <span class="text-[11px] px-1.5 py-0.2 bg-emerald-100 text-emerald-700 rounded">일반 ${w.normalCount}</span>
+            </div>
+            <div class="text-[11px] text-slate-500 mt-1 truncate" title="${focusSeniors.map(s=>s.name).join(', ')}">
+              중점: ${focusSeniors.length > 0 ? focusSeniors.map(s => `<strong>${s.name}</strong>`).join(', ') : '등록 필요'}
+            </div>
+          </div>
+        `;
+
+        const recentReport = workerReports[0];
+        let reportPreview = '';
+        if (recentReport) {
+          const reportSenior = state.seniors.find(s => s.id === recentReport.seniorId);
+          const sName = reportSenior ? reportSenior.name : '어르신';
+          const isUrgent = recentReport.urgency === '긴급/응급';
+          const isWarning = recentReport.urgency === '주의/요관찰';
+
+          reportPreview = `
+            <div class="text-xs p-2 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="font-bold text-slate-800 flex items-center gap-1">
+                  ${isUrgent ? '🚨' : (isWarning ? '⚠️' : '📝')} ${sName} 어르신
+                  <span class="text-[10px] px-1.5 py-0.2 rounded font-normal ${isUrgent ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${recentReport.category}</span>
+                </span>
+                <span class="text-[10px] text-slate-400">${recentReport.date.substring(5, 10)}</span>
+              </div>
+              <p class="text-[11px] text-slate-700 truncate" title="${recentReport.content}">${recentReport.content}</p>
+              <div class="mt-1 flex items-center justify-between text-[10px]">
+                <span class="text-blue-600 truncate">↳ ${recentReport.action || '조치중'}</span>
+                <span class="font-semibold ${recentReport.status === '조치완료' ? 'text-emerald-600' : 'text-amber-600'}">[${recentReport.status}]</span>
+              </div>
+            </div>
+          `;
+        } else {
+          reportPreview = `<div class="text-xs text-slate-400">최근 특이사항 보고 없음</div>`;
+        }
+
+        const currentLeave = workerLeaves.find(l => l.status === '승인완료' || l.status === '승인대기');
+        let leavePreview = '';
+        if (currentLeave) {
+          leavePreview = `
+            <div class="text-xs">
+              <div class="flex items-center gap-1 font-semibold text-purple-600">
+                <span>${currentLeave.type} (${currentLeave.days}일)</span>
+                <span class="text-[10px] px-1.5 py-0.2 rounded font-normal ${currentLeave.status === '승인완료' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${currentLeave.status}</span>
+              </div>
+              <div class="text-[11px] text-slate-500">${currentLeave.startDate} ~ ${currentLeave.endDate}</div>
+              <div class="text-[11px] font-bold text-blue-600 mt-0.5">대행: ${subName} 지원사</div>
+            </div>
+          `;
+        } else {
+          leavePreview = `
+            <div class="text-xs">
+              <span class="text-slate-400">당월 휴가 없음</span>
+              <div class="text-[11px] text-slate-700 mt-0.5 font-medium">대행: ${subName} 지원사</div>
+            </div>
+          `;
+        }
+
+        html += `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="p-3 text-center text-xs text-slate-400 font-semibold">${index + 1}</td>
+            <td class="p-3">
+              <div class="font-bold text-sm text-slate-900">${w.name}</div>
+              <div class="text-xs text-slate-500">📞 ${w.phone}</div>
+              <div class="text-xs text-blue-600 font-medium">${w.area}</div>
+            </td>
+            <td class="p-3 text-center">${statusBadge}</td>
+            <td class="p-3">${seniorPreview}</td>
+            <td class="p-3">${reportPreview}</td>
+            <td class="p-3">${leavePreview}</td>
+            <td class="p-3 text-center no-print whitespace-nowrap">
+              <button onclick="toggleWorkerExpand(${w.id})" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-50 border border-slate-300 hover:bg-blue-50 text-blue-600 transition mb-1 block w-full">
+                ${isExpanded ? '▲ 닫기' : '▼ 펼치기'}
+              </button>
+              <div class="flex items-center gap-1">
+                <button onclick="quickAddReportForWorker(${w.id})" class="flex-1 px-1.5 py-0.5 text-[11px] text-red-600 border border-slate-300 rounded hover:bg-red-50" title="특이사항 작성">+보고</button>
+                <button onclick="quickAddLeaveForWorker(${w.id})" class="flex-1 px-1.5 py-0.5 text-[11px] text-purple-600 border border-slate-300 rounded hover:bg-purple-50" title="휴가 신청">+휴가</button>
+              </div>
+            </td>
+          </tr>
+        `;
+
+        if (isExpanded) {
+          html += `
+            <tr class="bg-slate-50/70 border-b-2 border-blue-200">
+              <td colspan="7" class="p-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                  <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
+                    <div class="flex items-center gap-2">
+                      <span class="text-base font-bold text-slate-900">👤 ${w.name} 생활지원사 상세 세부대장</span>
+                      <span class="text-xs text-slate-500">권역: ${w.area} | 상호대체자: ${subName} 지원사</span>
+                    </div>
+                    <button onclick="openAddSeniorModalForWorker(${w.id})" class="text-xs px-2.5 py-1 rounded bg-blue-600 text-white font-medium hover:bg-blue-700">
+                      + 담당 어르신 추가
+                    </button>
+                  </div>
+
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                      <h5 class="text-xs font-bold text-slate-800 mb-1.5 flex items-center justify-between">
+                        <span>👵 담당 어르신 전체 명단 (${workerSeniors.length}명 등록)</span>
+                        <span class="text-[11px] text-slate-500">정원: 16명 (중점 2 / 일반 14)</span>
+                      </h5>
+                      <div class="border border-slate-200 rounded-lg overflow-hidden max-h-56 overflow-y-auto">
+                        <table class="w-full text-xs text-left">
+                          <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                            <tr>
+                              <th class="p-2">성명</th>
+                              <th class="p-2">구분</th>
+                              <th class="p-2">연락처</th>
+                              <th class="p-2">비상연락처</th>
+                              <th class="p-2">특이사항/건강</th>
+                            </tr>
+                          </thead>
+                          <tbody class="divide-y divide-slate-200">
+                            ${workerSeniors.length > 0 ? workerSeniors.map(s => `
+                              <tr>
+                                <td class="p-2 font-bold">${s.name}</td>
+                                <td class="p-2"><span class="px-1.5 py-0.2 rounded text-[10px] ${s.type === '중점돌봄' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}">${s.type}</span></td>
+                                <td class="p-2">${s.phone || '-'}</td>
+                                <td class="p-2">${s.emergency || '-'}</td>
+                                <td class="p-2 text-slate-500 max-w-xs truncate" title="${s.notes}">${s.notes || '-'}</td>
+                              </tr>
+                            `).join('') : '<tr><td colspan="5" class="p-3 text-center text-slate-400">등록된 어르신이 없습니다.</td></tr>'}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h5 class="text-xs font-bold text-slate-800 mb-1.5 flex items-center justify-between">
+                        <span>🚨 어르신 특이사항 보고 이력 (${workerReports.length}건)</span>
+                        <button onclick="quickAddReportForWorker(${w.id})" class="text-[11px] text-red-600 hover:underline font-semibold">+ 보고 작성</button>
+                      </h5>
+                      <div class="space-y-2 max-h-56 overflow-y-auto">
+                        ${workerReports.length > 0 ? workerReports.map(r => {
+                          const rSenior = state.seniors.find(s => s.id === r.seniorId);
+                          return `
+                            <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-1">
+                              <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800">${rSenior ? rSenior.name : '어르신'} (${r.category})</span>
+                                <span class="text-[10px] text-slate-400">${r.date}</span>
+                              </div>
+                              <p class="text-slate-700">${r.content}</p>
+                              <div class="flex items-center justify-between text-[11px] pt-0.5">
+                                <span class="text-blue-600">↳ 조치: ${r.action || '조치중'}</span>
+                                <span class="px-1.5 py-0.2 rounded text-[10px] font-bold ${r.status === '조치완료' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${r.status}</span>
+                              </div>
+                            </div>
+                          `;
+                        }).join('') : '<p class="text-xs text-slate-400 p-3 text-center border border-slate-200 rounded-lg">등록된 보고 내역이 없습니다.</p>'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function openAddReportModal() { openModal('modal-add-report'); }
+    function openAddLeaveModal() { openModal('modal-add-leave'); }
+    function openAddSeniorModal() { openModal('modal-add-senior'); }
+
+    function quickAddReportForWorker(wId) {
+      document.getElementById('form-report-worker').value = wId;
+      updateSeniorDropdownForReport();
+      openModal('modal-add-report');
+    }
+    function quickAddLeaveForWorker(wId) {
+      document.getElementById('form-leave-worker').value = wId;
+      autoSelectSubstitute();
+      openModal('modal-add-leave');
+    }
+    function openAddSeniorModalForWorker(wId) {
+      document.getElementById('form-senior-worker').value = wId;
+      openModal('modal-add-senior');
+    }
+
+    function handleSaveReport(e) {
+      e.preventDefault();
+      const now = new Date();
+      const dateStr = now.toISOString().replace('T', ' ').substring(0, 16);
+
+      const newReport = {
+        id: Date.now(),
+        date: dateStr,
+        workerId: parseInt(document.getElementById('form-report-worker').value),
+        seniorId: parseInt(document.getElementById('form-report-senior').value),
+        category: document.getElementById('form-report-category').value,
+        urgency: document.getElementById('form-report-urgency').value,
+        content: document.getElementById('form-report-content').value.trim(),
+        action: document.getElementById('form-report-action').value.trim(),
+        status: document.getElementById('form-report-status').value
+      };
+
+      state.reports.unshift(newReport);
+      saveState();
+      refreshKPIs();
+      renderMasterTable();
+      closeModal('modal-add-report');
+      e.target.reset();
+      alert('특이사항 보고서가 등록되었습니다.');
+    }
+
+    function handleSaveLeave(e) {
+      e.preventDefault();
+      const start = document.getElementById('form-leave-start').value;
+      const end = document.getElementById('form-leave-end').value;
+      const type = document.getElementById('form-leave-type').value;
+
+      let days = 1;
+      if (type.includes('반차')) {
+        days = 0.5;
+      } else {
+        const d1 = new Date(start);
+        const d2 = new Date(end);
+        const diffTime = Math.abs(d2 - d1);
+        days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      }
+
+      const newLeave = {
+        id: Date.now(),
+        requestDate: new Date().toISOString().substring(0, 10),
+        workerId: parseInt(document.getElementById('form-leave-worker').value),
+        type: type,
+        startDate: start,
+        endDate: end,
+        days: days,
+        reason: document.getElementById('form-leave-reason').value.trim(),
+        substituteId: parseInt(document.getElementById('form-leave-substitute').value),
+        plan: document.getElementById('form-leave-plan').value.trim(),
+        status: "승인대기"
+      };
+
+      state.leaves.unshift(newLeave);
+      saveState();
+      refreshKPIs();
+      renderMasterTable();
+      closeModal('modal-add-leave');
+      e.target.reset();
+      alert('휴가 신청이 접수되었습니다.');
+    }
+
+    function handleSaveSenior(e) {
+      e.preventDefault();
+      const newSenior = {
+        id: Date.now(),
+        workerId: parseInt(document.getElementById('form-senior-worker').value),
+        name: document.getElementById('form-senior-name').value.trim(),
+        type: document.getElementById('form-senior-type').value,
+        phone: document.getElementById('form-senior-phone').value.trim(),
+        emergency: document.getElementById('form-senior-emergency').value.trim(),
+        address: document.getElementById('form-senior-address').value.trim(),
+        notes: document.getElementById('form-senior-notes').value.trim()
+      };
+
+      state.seniors.unshift(newSenior);
+      const worker = state.workers.find(w => w.id === newSenior.workerId);
+      if (worker) {
+        if (newSenior.type === '중점돌봄') worker.focusCount++;
+        else worker.normalCount++;
+      }
+
+      saveState();
+      refreshKPIs();
+      renderMasterTable();
+      closeModal('modal-add-senior');
+      e.target.reset();
+      alert('어르신이 등록되었습니다.');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initData();
+    });
+  </script>
+</body>
+</html>

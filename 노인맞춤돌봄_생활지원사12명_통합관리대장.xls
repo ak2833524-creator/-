@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Title>노인맞춤돌봄서비스 생활지원사 12인 통합 관리대장</Title>
+  <Author>노인맞춤돌봄서비스</Author>
+  <Created>2026-10-08T15:30:00Z</Created>
+ </DocumentProperties>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="맑은 고딕" ss:Size="10" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="Title">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Font ss:FontName="맑은 고딕" ss:Size="16" ss:Bold="1" ss:Color="#1E3A8A"/>
+   <Interior ss:Color="#EFF6FF" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="Header">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#94A3B8"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#94A3B8"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#94A3B8"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#94A3B8"/>
+   </Borders>
+   <Font ss:FontName="맑은 고딕" ss:Size="10" ss:Bold="1" ss:Color="#1E293B"/>
+   <Interior ss:Color="#E2E8F0" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="CellCenter">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="맑은 고딕" ss:Size="9.5"/>
+  </Style>
+  <Style ss:ID="CellLeft">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="맑은 고딕" ss:Size="9.5"/>
+  </Style>
+  <Style ss:ID="CellBold">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="맑은 고딕" ss:Size="9.5" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="UrgentBadge">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="맑은 고딕" ss:Size="9.5" ss:Bold="1" ss:Color="#991B1B"/>
+   <Interior ss:Color="#FEE2E2" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="FocusBadge">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="맑은 고딕" ss:Size="9.5" ss:Bold="1" ss:Color="#B45309"/>
+   <Interior ss:Color="#FEF3C7" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="LeaveBadge">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="맑은 고딕" ss:Size="9.5" ss:Bold="1" ss:Color="#6B21A8"/>
+   <Interior ss:Color="#F3E8FF" ss:Pattern="Solid"/>
+  </Style>
+ </Styles>
+
+ <Worksheet ss:Name="1. 12인 통합 총괄관리대장">
+  <Table ss:ExpandedColumnCount="11" x:FullColumns="1" x:FullRows="1" ss:DefaultRowHeight="24">
+   <Column ss:Width="40"/>
+   <Column ss:Width="80"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="70"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="180"/>
+   <Column ss:Width="260"/>
+   <Column ss:Width="80"/>
+   <Column ss:Width="140"/>
+   <Column ss:Width="100"/>
+
+   <Row ss:Height="40">
+    <Cell ss:MergeAcross="10" ss:StyleID="Title">
+     <Data ss:Type="String">노인맞춤돌봄서비스 생활지원사 12인 통합 총괄 관리대장</Data>
+    </Cell>
+   </Row>
+
+   <Row ss:Height="22">
+    <Cell ss:MergeAcross="10" ss:StyleID="CellLeft">
+     <Data ss:Type="String">※ 본 대장은 생활지원사 12명의 기본현황, 담당 어르신 현황, 최근 특이사항 보고, 휴가 및 대체인력을 한눈에 대조 확인하는 통합 총괄표입니다.</Data>
+    </Cell>
+   </Row>
+
+   <Row ss:Height="28">
+    <Cell ss:StyleID="Header"><Data ss:Type="String">연번</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">생활지원사</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">연락처</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">담당권역</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">근무상태</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">담당 어르신수</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">주요 담당 어르신(중점돌봄)</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">어르신 최근 특이사항 보고</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">특이사항 상태</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">당월 휴가일정 및 사유</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">업무 대행자</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">김영순</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-3451-2001</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">1권역 (행복1동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">박순옥(관절염), 이종태(인지저하)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[10/08] 박순옥 어르신 무릎 부종 심화 정형외과 동행 진료 연계</Data></Cell>
+    <Cell ss:StyleID="UrgentBadge"><Data ss:Type="String">조치중 (주의)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">-</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">이정숙 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">2</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">이정숙</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-4822-2002</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">1권역 (행복2동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">최길자(편마비), 조동일(심혈관)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[10/06] 최길자 어르신 화장실 낙상 타박상 119 응급실 이송 및 가족인계</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="LeaveBadge"><Data ss:Type="String">10/12 오후반차 (개인용무)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">김영순 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">3</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">박미경</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-9182-2003</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">2권역 (희망1동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">황복남(우울증), 손정식(와상)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[10/07] 황복남 어르신 식사 거름 및 기력 저하 죽 배달 연계</Data></Cell>
+    <Cell ss:StyleID="UrgentBadge"><Data ss:Type="String">조치중 (주의)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">-</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">최순자 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">4</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">최순자</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-2931-2004</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">2권역 (희망2동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">배춘자(협착증), 윤점순(일반)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[10/02] 배춘자 어르신 안부전화 미수신 긴급방문 경로당 확인</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">-</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">박미경 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">5</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">정영희</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-8472-2005</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">3권역 (평화1동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">문수길(당뇨발), 신옥자(일반)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[10/05] 문수길 어르신 발가락 궤양 관찰 병원동행 일정 조율</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">-</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">강정순 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">6</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">강정순</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-5321-2006</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">3권역 (평화2동)</Data></Cell>
+    <Cell ss:StyleID="LeaveBadge"><Data ss:Type="String">휴가중</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">양금순(독거고령), 류길자(일반)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[10/08] 대체지원사 정영희가 양금순 어르신 대리 순회방문 실시</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="LeaveBadge"><Data ss:Type="String">10/08 연차(1일, 가족검진)</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">정영희 지원사(대리수행)</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">7</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">조옥자</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-7712-2007</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">4권역 (나눔1동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">서만석(COPD), 김차남(일반)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[10/04] 서만석 어르신 보일러 고장 냉방상태 점검 및 주민센터 난방지원</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">-</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">윤명숙 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">8</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">윤명숙</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-6192-2008</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">4권역 (나눔2동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">전옥분(고독사위험), 송갑수(일반)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[09/28] 전옥분 어르신 유선 안부확인 및 추석 키트 전달 완료</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">-</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조옥자 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">9</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">한경희</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-3841-2009</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">5권역 (사랑1동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">노진구(알코올의존), 서순임(일반)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[09/29] 노진구 어르신 명절 후 고독감 호소 복지관 원예프로그램 연계</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="LeaveBadge"><Data ss:Type="String">10/15~16 연차(2일, 자녀혼사)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">오미자 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">10</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">오미자</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-4211-2010</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">5권역 (사랑2동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">구영모(파킨슨병), 김말선(일반)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[10/01] 구영모 어르신 떨림 증상 점검 보행 안전 손잡이 추가 의뢰</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">-</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">한경희 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">11</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">송혜숙</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-9012-2011</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">6권역 (온유1동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">안순자(골다공증), 박정자(일반)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[10/03] 안순자 어르신 욕실 미끄럼방지 매트 상태 점검 및 교체</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">-</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">임복순 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="36">
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="Number">12</Data></Cell>
+    <Cell ss:StyleID="CellBold"><Data ss:Type="String">임복순</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">010-8231-2012</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">6권역 (온유2동)</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">정상근무</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">16명 (중점2/일반14)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">오갑순(인지저하), 강덕순(일반)</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">[09/25] 오갑순 어르신 약 달력 중복복용 방지 점검 및 투약지도</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">조치완료</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">-</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">송혜숙 지원사</Data></Cell>
+   </Row>
+
+   <Row ss:Height="30">
+    <Cell ss:MergeAcross="4" ss:StyleID="Header"><Data ss:Type="String">합 계 / 총괄</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">총 192명 (중점 24 / 일반 168)</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">중점 24가구 상시집중</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">당월 보고 8건 (긴급 2 / 완료 6)</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">조치율 75%</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">당월 휴가 4건</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">대체율 100%</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+</Workbook>
