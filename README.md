@@ -17,23 +17,17 @@
 
 ---
 
-## ⚡ Supabase 데이터베이스 연동 방법
+## ⚡ Supabase 데이터베이스 연동 현황
 
-### 1단계: Supabase 프로젝트 생성
-1. [Supabase 공식 사이트](https://supabase.com/)에 로그인하고 새 프로젝트(New project)를 만듭니다.
+현재 본 웹 애플리케이션은 아래 Supabase 클라우드 데이터베이스와 **기본 연결(Default Connected)**되어 있습니다:
 
-### 2단계: 데이터베이스 테이블 생성 (SQL Editor)
-1. Supabase 대시보드 좌측 메뉴에서 **SQL Editor**로 이동합니다.
-2. 프로젝트 내 `schema.sql` 파일의 내용을 전체 복사하여 SQL Editor에 붙여넣습니다.
-3. **Run** 버튼을 클릭하여 실행합니다.
-   - `care_workers` (생활지원사 12인)
-   - `care_seniors` (어르신 명단)
-   - `care_reports` (특이사항 보고대장)
-   - `care_leaves` (휴가 및 대체인력 대장)
-   - 보안을 위한 RLS 정책 및 Realtime 채널 활성화가 자동으로 설정됩니다.
+- **Supabase Project URL**: `https://exptnoeldqpojjxopwup.supabase.co`
+- **Publishable / Anon API Key**: `sb_publishable_TtxTcnNFoU5NWhYwd-eT2A_EWex-oRP`
+- **동기화 테이블**:
+  - `care_workers` (생활지원사 12인)
+  - `care_seniors` (어르신 명단 17명 등록)
+  - `care_reports` (어르신 특이사항 보고대장 8건)
+  - `care_leaves` (휴가 및 대체인력 대장 4건)
 
-### 3단계: 웹앱에서 API 키 연결
-1. Supabase 대시보드 **Project Settings** > **API** 메뉴로 이동합니다.
-2. **Project URL**과 **anon public API Key**를 확인합니다.
-3. 웹앱([index.html](index.html)) 상단의 **[⚡ Supabase 연동 설정]** 버튼을 클릭합니다.
-4. Project URL과 Anon Key를 입력하고 **[연결 테스트 및 저장]**을 누르면 즉시 실시간 클라우드 DB 연동이 시작됩니다!
+웹 브라우저에서 `index.html`을 열면 추가 설정 없이 바로 **🟢 Supabase 클라우드 연동중** 모드로 작동하며 실시간 데이터베이스 읽기/쓰기가 진행됩니다. 다른 Supabase 프로젝트로 변경하고 싶으신 경우 상단의 **[⚡ Supabase 연동 설정]** 버튼을 통해 언제든지 변경하실 수 있습니다.
+
