@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>노인맞춤돌봄서비스 생활지원사 12인 한눈에 보는 통합 관리대장</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @media print {
       .no-print { display: none !important; }
@@ -28,30 +31,45 @@
           노인맞춤돌봄서비스 실무 표준
         </span>
         <span class="text-xs text-slate-500">생활지원사 12인 통합 총괄판</span>
+        
+        <!-- Supabase Status Badge -->
+        <div id="supabase-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 cursor-pointer hover:opacity-80 transition" onclick="openSupabaseModal()" title="클릭하여 수파베이스 연동 설정">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span>로컬 모드 (Supabase 미연결)</span>
+        </div>
       </div>
       <h1 class="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
         <span>📋</span> 생활지원사 12인 한눈에 보는 통합 관리대장
       </h1>
       <p class="text-sm text-slate-500 mt-0.5">
-        담당 어르신 명단 · 어르신 특이사항 보고 · 휴가 및 대체인력 현황을 <strong>한 화면에서 동시에 확인</strong>합니다.
+        담당 어르신 명단 · 특이사항 보고 · 휴가 및 대체인력 현황을 <strong>실시간 클라우드 DB 연동</strong>으로 관리합니다.
       </p>
     </div>
 
     <!-- Actions -->
     <div class="flex items-center gap-2 no-print flex-wrap">
-      <a href="./노인맞춤돌봄_생활지원사12명_통합관리대장.xls" download class="px-3.5 py-2 text-sm font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm flex items-center gap-1.5 transition">
+      <button onclick="openSupabaseModal()" class="px-3.5 py-2 text-sm font-semibold rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 shadow-sm flex items-center gap-1.5 transition">
+        <span>⚡</span> Supabase 연동 설정
+      </button>
+      <a href="./노인맞춤돌봄_생활지원사12인_통합관리대장.xlsx" download class="px-3.5 py-2 text-sm font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm flex items-center gap-1.5 transition">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5L19 7.5V19a2 2 0 01-2 2z"></path></svg>
-        엑셀(.XLS) 다운로드
+        엑셀 다운로드
       </a>
       <button onclick="window.print()" class="px-3.5 py-2 text-sm font-medium rounded-lg bg-white hover:bg-slate-100 border border-slate-300 shadow-sm flex items-center gap-1.5 transition">
         <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
         출력 / 결재용 인쇄
       </button>
-      <button onclick="resetDefaultData()" class="px-3 py-2 text-xs text-slate-500 hover:text-red-500 border border-slate-300 rounded-lg transition" title="샘플 데이터 초기화">
-        초기화
+      <button onclick="handleReloadOrReset()" class="px-3 py-2 text-xs text-slate-500 hover:text-red-500 border border-slate-300 rounded-lg transition" title="새로고침 또는 초기화">
+        새로고침
       </button>
     </div>
   </header>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-20 opacity-0 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-sm">
+    <span id="toast-icon">ℹ️</span>
+    <span id="toast-msg">메시지</span>
+  </div>
 
   <!-- Print-Only Approval Box -->
   <div class="print-only mb-6 border border-gray-400 p-2 text-right">
@@ -75,7 +93,7 @@
     <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
       <div class="flex items-center justify-between">
         <span class="text-xs font-medium text-slate-500">생활지원사 현황</span>
-        <span class="p-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold">12명</span>
+        <span class="p-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold" id="kpi-worker-total">12명</span>
       </div>
       <div class="mt-1.5 flex items-baseline gap-2">
         <span class="text-2xl font-bold text-slate-900">12명 전원</span>
@@ -87,35 +105,35 @@
     <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
       <div class="flex items-center justify-between">
         <span class="text-xs font-medium text-slate-500">관리 대상 어르신</span>
-        <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold">192명</span>
+        <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold" id="kpi-senior-total">192명</span>
       </div>
       <div class="mt-1.5 flex items-baseline gap-2">
-        <span class="text-2xl font-bold text-slate-900">192명</span>
-        <span class="text-xs text-blue-600 font-semibold">1인당 16명 배정</span>
+        <span class="text-2xl font-bold text-slate-900" id="kpi-senior-count">192명</span>
+        <span class="text-xs text-blue-600 font-semibold" id="kpi-senior-avg">1인당 16명 배정</span>
       </div>
-      <p class="text-[11px] text-slate-500 mt-0.5">중점돌봄 24명 (주2~3회) · 일반 168명</p>
+      <p class="text-[11px] text-slate-500 mt-0.5" id="kpi-senior-breakdown">중점돌봄 24명 (주2~3회) · 일반 168명</p>
     </div>
 
     <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
       <div class="flex items-center justify-between">
         <span class="text-xs font-medium text-slate-500">당월 특이사항 보고</span>
-        <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg text-xs font-bold">8건</span>
+        <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg text-xs font-bold" id="kpi-report-total">8건</span>
       </div>
       <div class="mt-1.5 flex items-baseline gap-2">
         <span class="text-2xl font-bold text-amber-600" id="kpi-report-urgent">2건 조치중</span>
-        <span class="text-xs text-emerald-600 font-semibold">6건 조치완료</span>
+        <span class="text-xs text-emerald-600 font-semibold" id="kpi-report-done">6건 조치완료</span>
       </div>
-      <p class="text-[11px] text-slate-500 mt-0.5">응급이송 1 · 병원동행 4 · 영양/기타 3</p>
+      <p class="text-[11px] text-slate-500 mt-0.5" id="kpi-report-desc">응급이송 · 병원동행 · 영양상태 등</p>
     </div>
 
     <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
       <div class="flex items-center justify-between">
         <span class="text-xs font-medium text-slate-500">휴가 신청 및 근태</span>
-        <span class="p-1.5 bg-purple-50 text-purple-600 rounded-lg text-xs font-bold">4건</span>
+        <span class="p-1.5 bg-purple-50 text-purple-600 rounded-lg text-xs font-bold" id="kpi-leave-total">4건</span>
       </div>
       <div class="mt-1.5 flex items-baseline gap-2">
         <span class="text-2xl font-bold text-purple-600" id="kpi-leave-summary">승인대기 1건</span>
-        <span class="text-xs text-emerald-600 font-semibold">3건 승인완료</span>
+        <span class="text-xs text-emerald-600 font-semibold" id="kpi-leave-approved">3건 승인완료</span>
       </div>
       <p class="text-[11px] text-slate-500 mt-0.5">어르신 안전확인 공백 0건 (대체수행)</p>
     </div>
@@ -159,16 +177,91 @@
           </tr>
         </thead>
         <tbody id="master-table-body" class="divide-y divide-slate-200">
+          <!-- Dynamically populated -->
         </tbody>
       </table>
     </div>
     <div class="p-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-      <span>* 각 생활지원사의 <strong>[▼ 어르신/보고 펼치기]</strong>를 누르면 전체 담당 어르신과 보고 이력이 바로 확장됩니다.</span>
-      <span class="font-semibold text-blue-600">총 12명 생활지원사 정상 연동중</span>
+      <span>* 각 생활지원사의 <strong>[▼ 어르신/보고 펼치기]</strong>를 누르면 전체 담당 어르신과 보고 이력이 확장됩니다.</span>
+      <span class="font-semibold" id="table-footer-status">데이터 로딩 중...</span>
     </div>
   </div>
 
-  <!-- MODALS -->
+  <!-- ============================================================================== -->
+  <!-- MODAL: Supabase Configuration Settings -->
+  <!-- ============================================================================== -->
+  <div id="modal-supabase" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xl rounded-2xl border border-slate-200 shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-900 text-white">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">⚡</span>
+          <div>
+            <h3 class="font-bold text-base leading-tight">Supabase 데이터베이스 연동 설정</h3>
+            <p class="text-xs text-slate-400">클라우드 PostgreSQL 데이터베이스와 실시간 동기화합니다.</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-supabase')" class="text-2xl text-slate-400 hover:text-white">&times;</button>
+      </div>
+
+      <div class="p-5 space-y-4 text-sm max-h-[80vh] overflow-y-auto">
+        <!-- Notice banner -->
+        <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs space-y-1">
+          <div class="font-bold flex items-center gap-1.5">
+            <span>📌</span> Supabase 연동 안내
+          </div>
+          <p>
+            Supabase 대시보드(Project Settings &gt; API)에서 <strong>Project URL</strong>과 <strong>anon public key</strong>를 복사하여 아래에 입력하세요.
+          </p>
+          <p class="text-slate-600">
+            * 입력된 키는 브라우저 로컬스토리지에 안전하게 보관되며, 연결 시 즉시 데이터베이스와 양방향 동기화됩니다.
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Supabase Project URL *</label>
+          <input type="text" id="cfg-supabase-url" placeholder="https://your-project-id.supabase.co" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:bg-white focus:ring-1 focus:ring-emerald-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Supabase Anon Public API Key *</label>
+          <textarea id="cfg-supabase-key" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono focus:bg-white focus:ring-1 focus:ring-emerald-500"></textarea>
+        </div>
+
+        <!-- Connection Test Result Area -->
+        <div id="cfg-status-message" class="hidden p-3 rounded-lg text-xs"></div>
+
+        <div class="flex items-center justify-between pt-2 border-t border-slate-200">
+          <button type="button" onclick="disconnectSupabase()" class="text-xs text-red-600 hover:underline">
+            연결 해제 (로컬 모드로 전환)
+          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="testAndSaveSupabaseConnection()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-xs shadow-sm transition">
+              연결 테스트 및 저장
+            </button>
+          </div>
+        </div>
+
+        <!-- Advanced tools -->
+        <div class="pt-3 border-t border-slate-200 space-y-2">
+          <div class="text-xs font-bold text-slate-700">🛠️ 추가 편의 기능</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button type="button" onclick="uploadSeedDataToSupabase()" class="p-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-left text-xs transition">
+              <span class="font-bold block text-slate-800">📤 초기 샘플 데이터 일괄 업로드</span>
+              <span class="text-slate-500 text-[11px]">현재 12인 지원사 및 어르신 데이터를 수파베이스 DB에 등록합니다.</span>
+            </button>
+            <button type="button" onclick="copySchemaSQL()" class="p-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-left text-xs transition">
+              <span class="font-bold block text-slate-800">📋 SQL 스키마 안내 및 복사</span>
+              <span class="text-slate-500 text-[11px]">Supabase SQL Editor에 실행할 테이블 생성 스크립트를 확인합니다.</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================================== -->
+  <!-- MODALS: Add Report, Add Leave, Add Senior -->
+  <!-- ============================================================================== -->
   <div id="modal-add-report" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
       <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
@@ -214,7 +307,7 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">조치 및 연계 내용</label>
-          <input type="text" id="form-report-action" placeholder="예: 전담사회복지사 보고 후 정형외과 동행 진료 완료" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+          <input type="text" id="form-report-action" placeholder="예: 전담사회복지사 보고 후 인근 정형외과 동행 진료 연계" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">진행 상태 *</label>
@@ -338,7 +431,11 @@
     </div>
   </div>
 
+  <!-- ============================================================================== -->
+  <!-- JAVASCRIPT: SUPABASE & APPLICATION LOGIC -->
+  <!-- ============================================================================== -->
   <script>
+    // 기본 샘플 데이터 (Supabase 미연결 시 로컬스토리지 백업 및 시드용)
     const DEFAULT_WORKERS = [
       { id: 1, name: "김영순", phone: "010-3451-2001", area: "1권역 (행복1동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 2 },
       { id: 2, name: "이정숙", phone: "010-4822-2002", area: "1권역 (행복2동)", status: "정상근무", focusCount: 2, normalCount: 14, substituteId: 1 },
@@ -392,6 +489,233 @@
       { id: 4, requestDate: "2026-09-20", workerId: 4, type: "병가", startDate: "2026-09-22", endDate: "2026-09-23", days: 2, reason: "독감으로 인한 병원 치료", substituteId: 3, plan: "박미경 지원사가 희망2동 중점 2가구 집중 대리 순회", status: "승인완료" }
     ];
 
+    // ==============================================================================
+    // DB SERVICE ADAPTER (Supabase + LocalStorage Fallback)
+    // ==============================================================================
+    class DatabaseAdapter {
+      constructor() {
+        this.client = null;
+        this.isConnected = false;
+        this.realtimeChannel = null;
+      }
+
+      init() {
+        const url = localStorage.getItem('supabase_url') || '';
+        const key = localStorage.getItem('supabase_key') || '';
+        if (url && key && window.supabase) {
+          try {
+            this.client = window.supabase.createClient(url, key);
+            this.isConnected = true;
+            this.setupRealtime();
+          } catch (err) {
+            console.error('Supabase 클라이언트 생성 실패:', err);
+            this.isConnected = false;
+          }
+        } else {
+          this.isConnected = false;
+        }
+        this.updateBadgeUI();
+      }
+
+      updateBadgeUI() {
+        const badge = document.getElementById('supabase-status-badge');
+        const footerStatus = document.getElementById('table-footer-status');
+        if (this.isConnected) {
+          badge.className = "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 cursor-pointer hover:opacity-80 transition";
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Supabase 클라우드 연동중</span>`;
+          if (footerStatus) footerStatus.innerHTML = `<span class="text-emerald-700 font-bold">● Supabase 실시간 동기화 완료</span>`;
+        } else {
+          badge.className = "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 cursor-pointer hover:opacity-80 transition";
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>로컬 모드 (Supabase 미연결)</span>`;
+          if (footerStatus) footerStatus.innerHTML = `<span class="text-slate-500 font-semibold">총 12명 생활지원사 로컬 연동중</span>`;
+        }
+      }
+
+      setupRealtime() {
+        if (!this.client) return;
+        try {
+          if (this.realtimeChannel) {
+            this.client.removeChannel(this.realtimeChannel);
+          }
+          this.realtimeChannel = this.client
+            .channel('public:care_sync')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'care_reports' }, () => {
+              showToast('특이사항 보고가 클라우드에서 업데이트되었습니다.', '🔄');
+              loadAppData();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'care_leaves' }, () => {
+              showToast('휴가 신청 내역이 클라우드에서 업데이트되었습니다.', '🔄');
+              loadAppData();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'care_seniors' }, () => {
+              showToast('어르신 정보가 클라우드에서 업데이트되었습니다.', '🔄');
+              loadAppData();
+            })
+            .subscribe();
+        } catch (e) {
+          console.warn('Realtime 구독 실패:', e);
+        }
+      }
+
+      async fetchWorkers() {
+        if (this.isConnected && this.client) {
+          const { data, error } = await this.client.from('care_workers').select('*').order('id', { ascending: true });
+          if (!error && data && data.length > 0) {
+            return data.map(w => ({
+              id: w.id,
+              name: w.name,
+              phone: w.phone,
+              area: w.area,
+              status: w.status,
+              focusCount: w.focus_count,
+              normalCount: w.normal_count,
+              substituteId: w.substitute_id
+            }));
+          }
+        }
+        const local = localStorage.getItem('care_workers');
+        return local ? JSON.parse(local) : DEFAULT_WORKERS;
+      }
+
+      async fetchSeniors() {
+        if (this.isConnected && this.client) {
+          const { data, error } = await this.client.from('care_seniors').select('*').order('id', { ascending: false });
+          if (!error && data) {
+            return data.map(s => ({
+              id: s.id,
+              workerId: s.worker_id,
+              name: s.name,
+              type: s.type,
+              phone: s.phone,
+              address: s.address,
+              emergency: s.emergency,
+              notes: s.notes
+            }));
+          }
+        }
+        const local = localStorage.getItem('care_seniors');
+        return local ? JSON.parse(local) : SAMPLE_SENIORS;
+      }
+
+      async fetchReports() {
+        if (this.isConnected && this.client) {
+          const { data, error } = await this.client.from('care_reports').select('*').order('id', { ascending: false });
+          if (!error && data) {
+            return data.map(r => ({
+              id: r.id,
+              date: r.report_date,
+              workerId: r.worker_id,
+              seniorId: r.senior_id,
+              category: r.category,
+              urgency: r.urgency,
+              content: r.content,
+              action: r.action,
+              status: r.status
+            }));
+          }
+        }
+        const local = localStorage.getItem('care_reports');
+        return local ? JSON.parse(local) : SAMPLE_REPORTS;
+      }
+
+      async fetchLeaves() {
+        if (this.isConnected && this.client) {
+          const { data, error } = await this.client.from('care_leaves').select('*').order('id', { ascending: false });
+          if (!error && data) {
+            return data.map(l => ({
+              id: l.id,
+              requestDate: l.request_date,
+              workerId: l.worker_id,
+              type: l.leave_type,
+              startDate: l.start_date,
+              endDate: l.end_date,
+              days: parseFloat(l.days),
+              reason: l.reason,
+              substituteId: l.substitute_id,
+              plan: l.plan,
+              status: l.status
+            }));
+          }
+        }
+        const local = localStorage.getItem('care_leaves');
+        return local ? JSON.parse(local) : SAMPLE_LEAVES;
+      }
+
+      async insertReport(report) {
+        if (this.isConnected && this.client) {
+          const payload = {
+            report_date: report.date,
+            worker_id: report.workerId,
+            senior_id: report.seniorId || null,
+            category: report.category,
+            urgency: report.urgency,
+            content: report.content,
+            action: report.action || '',
+            status: report.status || '조치중'
+          };
+          const { data, error } = await this.client.from('care_reports').insert([payload]).select();
+          if (error) throw error;
+          if (data && data[0]) report.id = data[0].id;
+        }
+        return report;
+      }
+
+      async updateReportStatus(reportId, status) {
+        if (this.isConnected && this.client) {
+          const { error } = await this.client.from('care_reports').update({ status }).eq('id', reportId);
+          if (error) throw error;
+        }
+      }
+
+      async insertLeave(leave) {
+        if (this.isConnected && this.client) {
+          const payload = {
+            request_date: leave.requestDate,
+            worker_id: leave.workerId,
+            leave_type: leave.type,
+            start_date: leave.startDate,
+            end_date: leave.endDate,
+            days: leave.days,
+            reason: leave.reason,
+            substitute_id: leave.substituteId,
+            plan: leave.plan,
+            status: leave.status
+          };
+          const { data, error } = await this.client.from('care_leaves').insert([payload]).select();
+          if (error) throw error;
+          if (data && data[0]) leave.id = data[0].id;
+        }
+        return leave;
+      }
+
+      async updateLeaveStatus(leaveId, status) {
+        if (this.isConnected && this.client) {
+          const { error } = await this.client.from('care_leaves').update({ status }).eq('id', leaveId);
+          if (error) throw error;
+        }
+      }
+
+      async insertSenior(senior) {
+        if (this.isConnected && this.client) {
+          const payload = {
+            worker_id: senior.workerId,
+            name: senior.name,
+            type: senior.type,
+            phone: senior.phone,
+            emergency: senior.emergency,
+            address: senior.address,
+            notes: senior.notes
+          };
+          const { data, error } = await this.client.from('care_seniors').insert([payload]).select();
+          if (error) throw error;
+          if (data && data[0]) senior.id = data[0].id;
+        }
+        return senior;
+      }
+    }
+
+    const db = new DatabaseAdapter();
+
     let state = {
       workers: [],
       seniors: [],
@@ -400,50 +724,59 @@
       expandedWorkers: new Set()
     };
 
-    function initData() {
-      const storedWorkers = localStorage.getItem('care_workers');
-      const storedSeniors = localStorage.getItem('care_seniors');
-      const storedReports = localStorage.getItem('care_reports');
-      const storedLeaves = localStorage.getItem('care_leaves');
+    // ==============================================================================
+    // CORE APP INITIALIZATION & REFRESH
+    // ==============================================================================
+    async function loadAppData() {
+      try {
+        state.workers = await db.fetchWorkers();
+        state.seniors = await db.fetchSeniors();
+        state.reports = await db.fetchReports();
+        state.leaves = await db.fetchLeaves();
 
-      state.workers = storedWorkers ? JSON.parse(storedWorkers) : DEFAULT_WORKERS;
-      state.seniors = storedSeniors ? JSON.parse(storedSeniors) : SAMPLE_SENIORS;
-      state.reports = storedReports ? JSON.parse(storedReports) : SAMPLE_REPORTS;
-      state.leaves = storedLeaves ? JSON.parse(storedLeaves) : SAMPLE_LEAVES;
+        // Local backup
+        localStorage.setItem('care_workers', JSON.stringify(state.workers));
+        localStorage.setItem('care_seniors', JSON.stringify(state.seniors));
+        localStorage.setItem('care_reports', JSON.stringify(state.reports));
+        localStorage.setItem('care_leaves', JSON.stringify(state.leaves));
 
-      saveState();
-      populateDropdowns();
-      refreshKPIs();
-      renderMasterTable();
-    }
-
-    function saveState() {
-      localStorage.setItem('care_workers', JSON.stringify(state.workers));
-      localStorage.setItem('care_seniors', JSON.stringify(state.seniors));
-      localStorage.setItem('care_reports', JSON.stringify(state.reports));
-      localStorage.setItem('care_leaves', JSON.stringify(state.leaves));
-    }
-
-    function resetDefaultData() {
-      if (confirm('샘플 데이터로 초기화하시겠습니까?')) {
-        state.workers = JSON.parse(JSON.stringify(DEFAULT_WORKERS));
-        state.seniors = JSON.parse(JSON.stringify(SAMPLE_SENIORS));
-        state.reports = JSON.parse(JSON.stringify(SAMPLE_REPORTS));
-        state.leaves = JSON.parse(JSON.stringify(SAMPLE_LEAVES));
-        saveState();
         populateDropdowns();
         refreshKPIs();
         renderMasterTable();
-        alert('초기화되었습니다.');
+      } catch (err) {
+        console.error('데이터 로드 실패:', err);
+        showToast('데이터 로딩 중 오류가 발생했습니다.', '⚠️');
       }
     }
 
     function refreshKPIs() {
-      const urgentOrActive = state.reports.filter(r => r.urgency === '긴급/응급' || r.status === '조치중').length;
-      document.getElementById('kpi-report-urgent').innerText = `${urgentOrActive}건 조치중`;
+      // 1. 생활지원사 현황
+      document.getElementById('kpi-worker-total').innerText = `${state.workers.length}명`;
+      const onLeaveWorkers = state.workers.filter(w => w.status === '휴가중').length;
+      const activeWorkers = state.workers.length - onLeaveWorkers;
+      document.getElementById('kpi-worker-working').innerText = `${activeWorkers}명 활동 · ${onLeaveWorkers}명 휴가`;
 
+      // 2. 관리 대상 어르신 현황
+      const totalSeniors = state.seniors.length;
+      document.getElementById('kpi-senior-total').innerText = `${totalSeniors}명`;
+      document.getElementById('kpi-senior-count').innerText = `${totalSeniors}명`;
+      const focusSeniors = state.seniors.filter(s => s.type === '중점돌봄').length;
+      const normalSeniors = totalSeniors - focusSeniors;
+      document.getElementById('kpi-senior-breakdown').innerText = `중점돌봄 ${focusSeniors}명 · 일반돌봄 ${normalSeniors}명`;
+
+      // 3. 특이사항 보고
+      const urgentOrActive = state.reports.filter(r => r.urgency === '긴급/응급' || r.status === '조치중').length;
+      const doneReports = state.reports.filter(r => r.status === '조치완료').length;
+      document.getElementById('kpi-report-total').innerText = `${state.reports.length}건`;
+      document.getElementById('kpi-report-urgent').innerText = `${urgentOrActive}건 조치중`;
+      document.getElementById('kpi-report-done').innerText = `${doneReports}건 조치완료`;
+
+      // 4. 휴가 신청 현황
       const pendingLeaves = state.leaves.filter(l => l.status === '승인대기').length;
+      const approvedLeaves = state.leaves.filter(l => l.status === '승인완료').length;
+      document.getElementById('kpi-leave-total').innerText = `${state.leaves.length}건`;
       document.getElementById('kpi-leave-summary').innerText = `승인대기 ${pendingLeaves}건`;
+      document.getElementById('kpi-leave-approved').innerText = `${approvedLeaves}건 승인완료`;
     }
 
     function populateDropdowns() {
@@ -526,12 +859,12 @@
         let seniorPreview = `
           <div class="text-xs">
             <div class="flex items-center gap-1.5 font-semibold text-blue-600">
-              <span>총 ${w.focusCount + w.normalCount}명</span>
-              <span class="text-[11px] px-1.5 py-0.2 bg-red-100 text-red-700 rounded">중점 ${w.focusCount}</span>
-              <span class="text-[11px] px-1.5 py-0.2 bg-emerald-100 text-emerald-700 rounded">일반 ${w.normalCount}</span>
+              <span>총 ${workerSeniors.length}명</span>
+              <span class="text-[11px] px-1.5 py-0.2 bg-red-100 text-red-700 rounded">중점 ${focusSeniors.length}</span>
+              <span class="text-[11px] px-1.5 py-0.2 bg-emerald-100 text-emerald-700 rounded">일반 ${workerSeniors.length - focusSeniors.length}</span>
             </div>
             <div class="text-[11px] text-slate-500 mt-1 truncate" title="${focusSeniors.map(s=>s.name).join(', ')}">
-              중점: ${focusSeniors.length > 0 ? focusSeniors.map(s => `<strong>${s.name}</strong>`).join(', ') : '등록 필요'}
+              중점: ${focusSeniors.length > 0 ? focusSeniors.map(s => `<strong>${s.name}</strong>`).join(', ') : '배정 대기'}
             </div>
           </div>
         `;
@@ -551,12 +884,14 @@
                   ${isUrgent ? '🚨' : (isWarning ? '⚠️' : '📝')} ${sName} 어르신
                   <span class="text-[10px] px-1.5 py-0.2 rounded font-normal ${isUrgent ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${recentReport.category}</span>
                 </span>
-                <span class="text-[10px] text-slate-400">${recentReport.date.substring(5, 10)}</span>
+                <span class="text-[10px] text-slate-400">${(recentReport.date || '').substring(5, 10)}</span>
               </div>
               <p class="text-[11px] text-slate-700 truncate" title="${recentReport.content}">${recentReport.content}</p>
               <div class="mt-1 flex items-center justify-between text-[10px]">
-                <span class="text-blue-600 truncate">↳ ${recentReport.action || '조치중'}</span>
-                <span class="font-semibold ${recentReport.status === '조치완료' ? 'text-emerald-600' : 'text-amber-600'}">[${recentReport.status}]</span>
+                <span class="text-blue-600 truncate">↳ ${recentReport.action || '조치 진행중'}</span>
+                <button onclick="toggleReportStatus(${recentReport.id}, '${recentReport.status}')" class="font-semibold px-1 py-0.2 rounded ${recentReport.status === '조치완료' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}" title="상태 변경 클릭">
+                  [${recentReport.status}] ⇄
+                </button>
               </div>
             </div>
           `;
@@ -571,7 +906,9 @@
             <div class="text-xs">
               <div class="flex items-center gap-1 font-semibold text-purple-600">
                 <span>${currentLeave.type} (${currentLeave.days}일)</span>
-                <span class="text-[10px] px-1.5 py-0.2 rounded font-normal ${currentLeave.status === '승인완료' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${currentLeave.status}</span>
+                <button onclick="toggleLeaveStatus(${currentLeave.id}, '${currentLeave.status}')" class="text-[10px] px-1.5 py-0.2 rounded font-normal ${currentLeave.status === '승인완료' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}" title="승인상태 토글">
+                  ${currentLeave.status} ⇄
+                </button>
               </div>
               <div class="text-[11px] text-slate-500">${currentLeave.startDate} ~ ${currentLeave.endDate}</div>
               <div class="text-[11px] font-bold text-blue-600 mt-0.5">대행: ${subName} 지원사</div>
@@ -629,11 +966,11 @@
                     <div>
                       <h5 class="text-xs font-bold text-slate-800 mb-1.5 flex items-center justify-between">
                         <span>👵 담당 어르신 전체 명단 (${workerSeniors.length}명 등록)</span>
-                        <span class="text-[11px] text-slate-500">정원: 16명 (중점 2 / 일반 14)</span>
+                        <span class="text-[11px] text-slate-500">배정: 중점 ${focusSeniors.length} / 일반 ${workerSeniors.length - focusSeniors.length}</span>
                       </h5>
                       <div class="border border-slate-200 rounded-lg overflow-hidden max-h-56 overflow-y-auto">
                         <table class="w-full text-xs text-left">
-                          <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                          <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 sticky top-0">
                             <tr>
                               <th class="p-2">성명</th>
                               <th class="p-2">구분</th>
@@ -692,6 +1029,304 @@
       tbody.innerHTML = html;
     }
 
+    // ==============================================================================
+    // CRUD EVENT HANDLERS
+    // ==============================================================================
+    async function handleSaveReport(e) {
+      e.preventDefault();
+      const now = new Date();
+      const dateStr = now.toISOString().replace('T', ' ').substring(0, 16);
+
+      const reportData = {
+        date: dateStr,
+        workerId: parseInt(document.getElementById('form-report-worker').value),
+        seniorId: parseInt(document.getElementById('form-report-senior').value),
+        category: document.getElementById('form-report-category').value,
+        urgency: document.getElementById('form-report-urgency').value,
+        content: document.getElementById('form-report-content').value.trim(),
+        action: document.getElementById('form-report-action').value.trim(),
+        status: document.getElementById('form-report-status').value
+      };
+
+      try {
+        const saved = await db.insertReport(reportData);
+        state.reports.unshift(saved);
+        refreshKPIs();
+        renderMasterTable();
+        closeModal('modal-add-report');
+        e.target.reset();
+        showToast(db.isConnected ? '특이사항 보고가 Supabase에 저장되었습니다.' : '특이사항 보고가 로컬에 저장되었습니다.', '🚨');
+      } catch (err) {
+        console.error(err);
+        alert('보고서 저장 중 오류가 발생했습니다: ' + err.message);
+      }
+    }
+
+    async function toggleReportStatus(reportId, currentStatus) {
+      const newStatus = currentStatus === '조치완료' ? '조치중' : '조치완료';
+      try {
+        await db.updateReportStatus(reportId, newStatus);
+        const report = state.reports.find(r => r.id === reportId);
+        if (report) report.status = newStatus;
+        refreshKPIs();
+        renderMasterTable();
+        showToast(`보고 상태가 [${newStatus}]으로 변경되었습니다.`, '✔️');
+      } catch (err) {
+        alert('상태 변경 실패: ' + err.message);
+      }
+    }
+
+    async function handleSaveLeave(e) {
+      e.preventDefault();
+      const start = document.getElementById('form-leave-start').value;
+      const end = document.getElementById('form-leave-end').value;
+      const type = document.getElementById('form-leave-type').value;
+
+      let days = 1;
+      if (type.includes('반차')) {
+        days = 0.5;
+      } else {
+        const d1 = new Date(start);
+        const d2 = new Date(end);
+        const diffTime = Math.abs(d2 - d1);
+        days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      }
+
+      const leaveData = {
+        requestDate: new Date().toISOString().substring(0, 10),
+        workerId: parseInt(document.getElementById('form-leave-worker').value),
+        type: type,
+        startDate: start,
+        endDate: end,
+        days: days,
+        reason: document.getElementById('form-leave-reason').value.trim(),
+        substituteId: parseInt(document.getElementById('form-leave-substitute').value),
+        plan: document.getElementById('form-leave-plan').value.trim(),
+        status: "승인대기"
+      };
+
+      try {
+        const saved = await db.insertLeave(leaveData);
+        state.leaves.unshift(saved);
+        refreshKPIs();
+        renderMasterTable();
+        closeModal('modal-add-leave');
+        e.target.reset();
+        showToast(db.isConnected ? '휴가 신청이 Supabase에 접수되었습니다.' : '휴가 신청이 로컬에 접수되었습니다.', '🏖️');
+      } catch (err) {
+        console.error(err);
+        alert('휴가 신청 저장 실패: ' + err.message);
+      }
+    }
+
+    async function toggleLeaveStatus(leaveId, currentStatus) {
+      const newStatus = currentStatus === '승인완료' ? '승인대기' : '승인완료';
+      try {
+        await db.updateLeaveStatus(leaveId, newStatus);
+        const leave = state.leaves.find(l => l.id === leaveId);
+        if (leave) leave.status = newStatus;
+        refreshKPIs();
+        renderMasterTable();
+        showToast(`휴가 상태가 [${newStatus}]으로 변경되었습니다.`, '✔️');
+      } catch (err) {
+        alert('상태 변경 실패: ' + err.message);
+      }
+    }
+
+    async function handleSaveSenior(e) {
+      e.preventDefault();
+      const seniorData = {
+        workerId: parseInt(document.getElementById('form-senior-worker').value),
+        name: document.getElementById('form-senior-name').value.trim(),
+        type: document.getElementById('form-senior-type').value,
+        phone: document.getElementById('form-senior-phone').value.trim(),
+        emergency: document.getElementById('form-senior-emergency').value.trim(),
+        address: document.getElementById('form-senior-address').value.trim(),
+        notes: document.getElementById('form-senior-notes').value.trim()
+      };
+
+      try {
+        const saved = await db.insertSenior(seniorData);
+        state.seniors.unshift(saved);
+        const worker = state.workers.find(w => w.id === saved.workerId);
+        if (worker) {
+          if (saved.type === '중점돌봄') worker.focusCount++;
+          else worker.normalCount++;
+        }
+        refreshKPIs();
+        renderMasterTable();
+        closeModal('modal-add-senior');
+        e.target.reset();
+        showToast(db.isConnected ? '어르신 정보가 Supabase에 등록되었습니다.' : '어르신 정보가 등록되었습니다.', '👵');
+      } catch (err) {
+        console.error(err);
+        alert('어르신 등록 실패: ' + err.message);
+      }
+    }
+
+    // ==============================================================================
+    // SUPABASE CONFIGURATION & SEED TOOLS
+    // ==============================================================================
+    function openSupabaseModal() {
+      document.getElementById('cfg-supabase-url').value = localStorage.getItem('supabase_url') || '';
+      document.getElementById('cfg-supabase-key').value = localStorage.getItem('supabase_key') || '';
+      const msgBox = document.getElementById('cfg-status-message');
+      msgBox.classList.add('hidden');
+      openModal('modal-supabase');
+    }
+
+    async function testAndSaveSupabaseConnection() {
+      const url = document.getElementById('cfg-supabase-url').value.trim();
+      const key = document.getElementById('cfg-supabase-key').value.trim();
+      const msgBox = document.getElementById('cfg-status-message');
+
+      if (!url || !key) {
+        msgBox.className = "p-3 rounded-lg text-xs bg-red-50 text-red-800 border border-red-200 block";
+        msgBox.innerHTML = "❌ Project URL과 Anon API Key를 모두 입력해주세요.";
+        return;
+      }
+
+      msgBox.className = "p-3 rounded-lg text-xs bg-blue-50 text-blue-800 border border-blue-200 block";
+      msgBox.innerHTML = "⏳ Supabase 연결 테스트 중...";
+
+      try {
+        const testClient = window.supabase.createClient(url, key);
+        // 간단한 쿼리로 연결성 테스트
+        const { data, error } = await testClient.from('care_workers').select('count', { count: 'exact', head: true });
+        
+        if (error && error.code !== 'PGRST116') {
+          // 테이블이 아직 없거나 권한 에러일 수 있음
+          throw error;
+        }
+
+        localStorage.setItem('supabase_url', url);
+        localStorage.setItem('supabase_key', key);
+        db.init();
+
+        msgBox.className = "p-3 rounded-lg text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 block";
+        msgBox.innerHTML = `✅ 연결 성공! Supabase 데이터베이스와 연결되었습니다.<br><span class="text-[11px] text-emerald-600">이제 클라우드 데이터를 불러옵니다.</span>`;
+        
+        showToast('Supabase 연동이 완료되었습니다!', '⚡');
+        await loadAppData();
+        setTimeout(() => closeModal('modal-supabase'), 1200);
+      } catch (err) {
+        console.error(err);
+        msgBox.className = "p-3 rounded-lg text-xs bg-red-50 text-red-800 border border-red-200 block";
+        msgBox.innerHTML = `❌ 연결 실패: ${err.message}<br><span class="text-[11px] text-red-600">* URL/키가 올바른지, SQL Editor에서 schema.sql을 실행했는지 확인해주세요.</span>`;
+      }
+    }
+
+    function disconnectSupabase() {
+      if (confirm('Supabase 연결을 해제하고 로컬 모드로 전환하시겠습니까?')) {
+        localStorage.removeItem('supabase_url');
+        localStorage.removeItem('supabase_key');
+        db.init();
+        loadAppData();
+        closeModal('modal-supabase');
+        showToast('로컬 모드로 전환되었습니다.', 'ℹ️');
+      }
+    }
+
+    async function uploadSeedDataToSupabase() {
+      if (!db.isConnected || !db.client) {
+        alert('먼저 Supabase 연결을 완료해주세요.');
+        return;
+      }
+      if (!confirm('현재 12인 지원사, 어르신 샘플, 보고 대장 데이터를 Supabase로 일괄 업로드하시겠습니까?')) {
+        return;
+      }
+
+      try {
+        showToast('Supabase로 샘플 데이터 전송 중...', '⏳');
+
+        // 1. 생활지원사
+        const workersPayload = DEFAULT_WORKERS.map(w => ({
+          id: w.id,
+          name: w.name,
+          phone: w.phone,
+          area: w.area,
+          status: w.status,
+          focus_count: w.focusCount,
+          normal_count: w.normalCount,
+          substitute_id: w.substituteId
+        }));
+        await db.client.from('care_workers').upsert(workersPayload);
+
+        // 2. 어르신
+        const seniorsPayload = SAMPLE_SENIORS.map(s => ({
+          id: s.id,
+          worker_id: s.workerId,
+          name: s.name,
+          type: s.type,
+          phone: s.phone,
+          emergency: s.emergency,
+          address: s.address,
+          notes: s.notes
+        }));
+        await db.client.from('care_seniors').upsert(seniorsPayload);
+
+        // 3. 보고서
+        const reportsPayload = SAMPLE_REPORTS.map(r => ({
+          id: r.id,
+          report_date: r.date,
+          worker_id: r.workerId,
+          senior_id: r.seniorId,
+          category: r.category,
+          urgency: r.urgency,
+          content: r.content,
+          action: r.action,
+          status: r.status
+        }));
+        await db.client.from('care_reports').upsert(reportsPayload);
+
+        // 4. 휴가
+        const leavesPayload = SAMPLE_LEAVES.map(l => ({
+          id: l.id,
+          request_date: l.requestDate,
+          worker_id: l.workerId,
+          leave_type: l.type,
+          start_date: l.startDate,
+          end_date: l.endDate,
+          days: l.days,
+          reason: l.reason,
+          substitute_id: l.substituteId,
+          plan: l.plan,
+          status: l.status
+        }));
+        await db.client.from('care_leaves').upsert(leavesPayload);
+
+        showToast('Supabase에 샘플 데이터 업로드가 완료되었습니다!', '🎉');
+        await loadAppData();
+      } catch (err) {
+        console.error(err);
+        alert('시드 데이터 업로드 실패: ' + err.message);
+      }
+    }
+
+    function copySchemaSQL() {
+      window.open('./schema.sql', '_blank');
+      showToast('schema.sql 파일이 프로젝트 루트에 준비되어 있습니다.', '📄');
+    }
+
+    function handleReloadOrReset() {
+      if (db.isConnected) {
+        loadAppData();
+        showToast('최신 데이터를 클라우드에서 동기화했습니다.', '🔄');
+      } else {
+        if (confirm('샘플 데이터로 초기화하시겠습니까?')) {
+          localStorage.removeItem('care_workers');
+          localStorage.removeItem('care_seniors');
+          localStorage.removeItem('care_reports');
+          localStorage.removeItem('care_leaves');
+          loadAppData();
+          showToast('로컬 데이터가 초기화되었습니다.', '🔄');
+        }
+      }
+    }
+
+    // ==============================================================================
+    // UTILITIES & MODAL CONTROLS
+    // ==============================================================================
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
     function openAddReportModal() { openModal('modal-add-report'); }
@@ -713,101 +1348,19 @@
       openModal('modal-add-senior');
     }
 
-    function handleSaveReport(e) {
-      e.preventDefault();
-      const now = new Date();
-      const dateStr = now.toISOString().replace('T', ' ').substring(0, 16);
-
-      const newReport = {
-        id: Date.now(),
-        date: dateStr,
-        workerId: parseInt(document.getElementById('form-report-worker').value),
-        seniorId: parseInt(document.getElementById('form-report-senior').value),
-        category: document.getElementById('form-report-category').value,
-        urgency: document.getElementById('form-report-urgency').value,
-        content: document.getElementById('form-report-content').value.trim(),
-        action: document.getElementById('form-report-action').value.trim(),
-        status: document.getElementById('form-report-status').value
-      };
-
-      state.reports.unshift(newReport);
-      saveState();
-      refreshKPIs();
-      renderMasterTable();
-      closeModal('modal-add-report');
-      e.target.reset();
-      alert('특이사항 보고서가 등록되었습니다.');
-    }
-
-    function handleSaveLeave(e) {
-      e.preventDefault();
-      const start = document.getElementById('form-leave-start').value;
-      const end = document.getElementById('form-leave-end').value;
-      const type = document.getElementById('form-leave-type').value;
-
-      let days = 1;
-      if (type.includes('반차')) {
-        days = 0.5;
-      } else {
-        const d1 = new Date(start);
-        const d2 = new Date(end);
-        const diffTime = Math.abs(d2 - d1);
-        days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      }
-
-      const newLeave = {
-        id: Date.now(),
-        requestDate: new Date().toISOString().substring(0, 10),
-        workerId: parseInt(document.getElementById('form-leave-worker').value),
-        type: type,
-        startDate: start,
-        endDate: end,
-        days: days,
-        reason: document.getElementById('form-leave-reason').value.trim(),
-        substituteId: parseInt(document.getElementById('form-leave-substitute').value),
-        plan: document.getElementById('form-leave-plan').value.trim(),
-        status: "승인대기"
-      };
-
-      state.leaves.unshift(newLeave);
-      saveState();
-      refreshKPIs();
-      renderMasterTable();
-      closeModal('modal-add-leave');
-      e.target.reset();
-      alert('휴가 신청이 접수되었습니다.');
-    }
-
-    function handleSaveSenior(e) {
-      e.preventDefault();
-      const newSenior = {
-        id: Date.now(),
-        workerId: parseInt(document.getElementById('form-senior-worker').value),
-        name: document.getElementById('form-senior-name').value.trim(),
-        type: document.getElementById('form-senior-type').value,
-        phone: document.getElementById('form-senior-phone').value.trim(),
-        emergency: document.getElementById('form-senior-emergency').value.trim(),
-        address: document.getElementById('form-senior-address').value.trim(),
-        notes: document.getElementById('form-senior-notes').value.trim()
-      };
-
-      state.seniors.unshift(newSenior);
-      const worker = state.workers.find(w => w.id === newSenior.workerId);
-      if (worker) {
-        if (newSenior.type === '중점돌봄') worker.focusCount++;
-        else worker.normalCount++;
-      }
-
-      saveState();
-      refreshKPIs();
-      renderMasterTable();
-      closeModal('modal-add-senior');
-      e.target.reset();
-      alert('어르신이 등록되었습니다.');
+    function showToast(message, icon = 'ℹ️') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = message;
+      document.getElementById('toast-icon').innerText = icon;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      initData();
+      db.init();
+      loadAppData();
     });
   </script>
 </body>
